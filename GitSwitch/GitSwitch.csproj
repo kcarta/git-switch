@@ -7,7 +7,7 @@
     <ProjectGuid>{992B579C-49A3-45A3-86CE-D59E49030772}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>GitSwitch</RootNamespace>
-    <AssemblyName>GitSwitch</AssemblyName>
+    <AssemblyName>gitswitch</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
