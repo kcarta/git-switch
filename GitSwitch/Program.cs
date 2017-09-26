@@ -32,56 +32,9 @@ namespace GitSwitch
             }
         }
 
-        private static void SwitchUser(string initials)
-        {
-            var person = FindPerson(initials);
-            if (person == null)
-            {
-                Console.WriteLine($"{initials} not registered");
-                PrintUsage();
-            }
-            else
-            {
-                ExecuteGitSwitchCommand(person);
-            }
-        }
-
-        private static void ExecuteGitSwitchCommand(Person person)
-        {
-            try
-            {
-                using (Process gitProcess = new Process())
-                {
-                    gitProcess.StartInfo = new ProcessStartInfo() { FileName = GitExeName };
-                    gitProcess.StartInfo.Arguments = GitNewNameCommand + $"\"{person.Name}\""; 
-                    gitProcess.Start();
-                    gitProcess.WaitForExit();
-
-                    gitProcess.StartInfo.Arguments = GitNewEmailCommand + person.Email;
-                    gitProcess.Start();
-                    gitProcess.WaitForExit();
-                }
-            }
-            // If we fail here, it is because Git was not found.
-            catch (Exception)
-            {
-                Console.WriteLine("Git executable not found. Make sure Git is installed and in the path variable");
-            }
-        }
-
-        private static Person FindPerson(string initials)
-        {
-            var people = LoadListFromFile();
-            if (people == null)
-            {
-                Console.WriteLine($"Error reading data file: {FilePath}");
-                return null;
-            }
-            return people.Find(p => p.Initials == initials);
-        }
-
         private static void RegisterNew(string initials, string name, string email)
         {
+            // If we got back a null result, just use an empty list and save that with the new info
             var people = LoadListFromFile() ?? new List<Person>();
             if (people.Exists(person => person.Initials == initials))
             {
@@ -116,6 +69,54 @@ namespace GitSwitch
             using (var streamWriter = new StreamWriter(FilePath, false))
             {
                 _serializer.Serialize(streamWriter, people);
+            }
+        }
+
+        private static void SwitchUser(string initials)
+        {
+            var person = FindPerson(initials);
+            if (person == null)
+            {
+                Console.WriteLine($"{initials} not registered");
+                PrintUsage();
+            }
+            else
+            {
+                ExecuteGitSwitchCommand(person);
+            }
+        }
+
+        private static Person FindPerson(string initials)
+        {
+            var people = LoadListFromFile();
+            if (people == null)
+            {
+                Console.WriteLine($"Error reading data file: {FilePath}");
+                return null;
+            }
+            return people.Find(p => p.Initials == initials);
+        }
+
+        private static void ExecuteGitSwitchCommand(Person person)
+        {
+            try
+            {
+                using (Process gitProcess = new Process())
+                {
+                    gitProcess.StartInfo = new ProcessStartInfo() { FileName = GitExeName };
+                    gitProcess.StartInfo.Arguments = GitNewNameCommand + $"\"{person.Name}\""; 
+                    gitProcess.Start();
+                    gitProcess.WaitForExit();
+
+                    gitProcess.StartInfo.Arguments = GitNewEmailCommand + person.Email;
+                    gitProcess.Start();
+                    gitProcess.WaitForExit();
+                }
+            }
+            // If we fail here, it is because Git was not found.
+            catch (Exception)
+            {
+                Console.WriteLine("Git executable not found. Make sure Git is installed and in the path variable");
             }
         }
 
