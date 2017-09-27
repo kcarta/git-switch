@@ -8,11 +8,13 @@ namespace GitSwitch
 {
     class Program
     {
-        private const string FilePath = "gitusers.xml";
         private const string GitExeName = "git.exe";
         private const string GitNewNameCommand = "config --global user.name ";
         private const string GitNewEmailCommand = "config --global user.email ";
         private static readonly XmlSerializer _serializer = new XmlSerializer(typeof(List<Person>));
+
+        private const string FileName = "gitusers.xml";
+        private static readonly string _filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), FileName);
 
         static void Main(string[] args)
         {
@@ -52,7 +54,7 @@ namespace GitSwitch
         {
             try
             {
-                using (var fileStream = File.Open(FilePath, FileMode.OpenOrCreate))
+                using (var fileStream = File.Open(_filePath, FileMode.OpenOrCreate))
                 {
                     return _serializer.Deserialize(fileStream) as List<Person>;
                 }
@@ -66,7 +68,7 @@ namespace GitSwitch
 
         private static void WriteListToFile(List<Person> people)
         {
-            using (var streamWriter = new StreamWriter(FilePath, false))
+            using (var streamWriter = new StreamWriter(_filePath, false))
             {
                 _serializer.Serialize(streamWriter, people);
             }
@@ -91,7 +93,7 @@ namespace GitSwitch
             var people = LoadListFromFile();
             if (people == null)
             {
-                Console.WriteLine($"Error reading data file: {FilePath}");
+                Console.WriteLine($"Error reading data file: {_filePath}");
                 return null;
             }
             return people.Find(p => p.Initials == initials);
